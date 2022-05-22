@@ -6,14 +6,14 @@ import {
   HttpStatus,
 } from '@nestjs/common';
 import { Request, Response, NextFunction } from 'express';
-import { UserService } from './service/user.service';
+import { UserService } from 'src/user/user.service';
 
 interface UserRequest extends Request {
   user: any;
 }
 
 @Injectable()
-export class isAuthenticated implements NestMiddleware {
+export class IsAuthenticated implements NestMiddleware {
   constructor(
     private readonly jwt: JwtService,
     private readonly userService: UserService,

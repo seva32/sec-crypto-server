@@ -18,7 +18,7 @@ import { CreateEmployeeDTO } from './dto/create-employee.dto';
 export class EmployeeController {
   constructor(private employeeService: EmployeeService) {}
 
-  @Post('/create')
+  @Post('create')
   async addEmployee(
     @Res() response,
     @Body() createEmployeeDTO: CreateEmployeeDTO,
