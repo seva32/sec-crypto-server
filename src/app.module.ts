@@ -1,12 +1,12 @@
+import path from 'path';
 import { Module } from '@nestjs/common';
+import { MongooseModule } from '@nestjs/mongoose';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { AppController } from './app.controller';
-import { AppService } from './app.service';
-import { MongooseModule } from '@nestjs/mongoose';
-import { EmployeeModule } from './employee/employee.module';
-import path from 'path';
-import { MONGO_URI } from './utils/constants';
 import { UserModule } from './user/user.module';
+import { AddressModule } from './address/address.module';
+import { AppService } from './app.service';
+import { MONGO_URI } from './utils/constants';
 
 @Module({
   imports: [
@@ -14,8 +14,8 @@ import { UserModule } from './user/user.module';
       useNewUrlParser: true,
       useUnifiedTopology: true,
     }),
-    EmployeeModule,
     UserModule,
+    AddressModule,
     ServeStaticModule.forRoot({
       rootPath: path.join(__dirname, '..', 'public'),
     }),
