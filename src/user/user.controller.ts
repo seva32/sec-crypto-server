@@ -10,6 +10,7 @@ import {
   Put,
   Query,
   Delete,
+  Req,
 } from '@nestjs/common';
 import { UserService } from './user.service';
 import { CreateUserDTO } from './dto/create-user.dto';
@@ -46,6 +47,19 @@ export class UserController {
   @Get('user/:userId')
   async getUser(@Res() response, @Param('userId') userId) {
     const user = await this.userService.getUser(userId);
+
+    if (!user) {
+      throw new NotFoundException('User does not exists!');
+    }
+
+    return response.status(HttpStatus.OK).json(user);
+  }
+
+  @Get('populate-addresses')
+  async getUserPopulated(@Req() request, @Res() response) {
+    if (!request.user) throw new NotFoundException('You must be logged in.');
+
+    const user = await this.userService.findByIdAndPopulate(request.user);
 
     if (!user) {
       throw new NotFoundException('User does not exists!');

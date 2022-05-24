@@ -26,9 +26,9 @@ export class IsAuthenticated implements NestMiddleware {
       ) {
         const token = req.headers.authorization.split(' ')[1];
         const decoded = await this.jwt.verify(token);
-        const user = await this.userService.getOne(decoded.email);
-        if (user) {
-          req.user = user;
+        const userId = await this.userService.getOne(decoded.userId);
+        if (userId) {
+          req.user = userId;
           next();
         } else {
           throw new HttpException('Unauthorized', HttpStatus.UNAUTHORIZED);

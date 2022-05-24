@@ -9,7 +9,10 @@ export const UserModel = new mongoose.Schema({
     dropDups: true,
     lowercase: true,
   },
-  password: String,
-  addresses: { type: Array, default: [] },
+  password: {
+    type: String,
+    required: true,
+  },
+  addresses: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Address' }],
   created_at: { type: Date, default: Date.now },
 });

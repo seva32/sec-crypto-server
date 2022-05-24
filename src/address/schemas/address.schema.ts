@@ -9,11 +9,5 @@ export const AddressModel = new mongoose.Schema({
     dropDups: true,
     immutable: true,
   },
-  user: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'User',
-    required: true,
-    immutable: true,
-  },
   created_at: { type: Date, default: Date.now, immutable: true },
 });

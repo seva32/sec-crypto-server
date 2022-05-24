@@ -38,7 +38,7 @@ export class UserService {
     if (foundUser) {
       const { password } = foundUser;
       if (await bcrypt.compare(user.password, password)) {
-        const payload = { email: user.email };
+        const payload = { userId: foundUser._id };
         return {
           token: jwt.sign(payload),
         };
@@ -54,8 +54,8 @@ export class UserService {
     );
   }
 
-  async getOne(email): Promise<User> {
-    return this.userModel.findOne({ email }).exec();
+  async getOne(userId): Promise<User> {
+    return this.userModel.findOne({ _id: userId }).exec();
   }
 
   async getAllUser(): Promise<User[]> {
@@ -74,5 +74,13 @@ export class UserService {
 
   async deleteUser(userId): Promise<any> {
     return this.userModel.findByIdAndRemove(userId);
+  }
+
+  async findByIdAndUpdate(id, update, options): Promise<any> {
+    return this.userModel.findByIdAndUpdate(id, update, options);
+  }
+
+  async findByIdAndPopulate(id): Promise<any> {
+    return this.userModel.findById(id).populate('addresses');
   }
 }

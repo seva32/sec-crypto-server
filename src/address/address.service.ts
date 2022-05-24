@@ -12,12 +12,23 @@ export class AddressService {
     private userService: UserService,
   ) {}
 
-  async addAddress(createAddressDTO: CreateAddressDTO): Promise<Address> {
+  async addAddress(
+    userId: string,
+    createAddressDTO: CreateAddressDTO,
+  ): Promise<Address> {
     try {
-      const user = await this.userService.getUser(createAddressDTO.user);
+      const user = await this.userService.getUser(userId);
       if (user) {
         const address = new this.addressModel(createAddressDTO);
-        return address.save();
+        return address.save().then((docAddress) => {
+          return this.userService.findByIdAndUpdate(
+            userId,
+            { $push: { addresses: docAddress._id } },
+            { new: true, useFindAndModify: false },
+          );
+        });
+      } else {
+        throw new HttpException('Invalid user', HttpStatus.BAD_REQUEST);
       }
     } catch (e) {
       console.error(e);
@@ -33,10 +44,12 @@ export class AddressService {
   }
 
   async updateAddress(
-    addressId,
+    address,
     createAddressDTO: CreateAddressDTO,
   ): Promise<Address> {
-    return this.addressModel.findByIdAndUpdate(addressId, createAddressDTO, {
+    const filter = { address };
+    const update = createAddressDTO;
+    return this.addressModel.findOneAndUpdate(filter, update, {
       new: true,
     });
   }

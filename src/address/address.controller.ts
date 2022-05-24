@@ -10,6 +10,7 @@ import {
   Put,
   Query,
   Delete,
+  Req,
 } from '@nestjs/common';
 import { AddressService } from './address.service';
 import { CreateAddressDTO } from '../address/dto/create-address.dto';
@@ -20,14 +21,19 @@ export class AddressController {
 
   @Post('create')
   async addAddress(
+    @Req() request,
     @Res() response,
     @Body() createAddressDTO: CreateAddressDTO,
   ) {
     try {
-      const address = await this.addressService.addAddress(createAddressDTO);
+      const user = await this.addressService.addAddress(
+        request.user,
+        createAddressDTO,
+      );
       return response.status(HttpStatus.OK).json({
         message: 'Address has been added successfully to user',
-        address,
+        address: createAddressDTO,
+        user,
       });
     } catch (e) {
       throw new NotFoundException('User does not exists!');
@@ -43,7 +49,6 @@ export class AddressController {
   @Get('address/:addressId')
   async getAddress(@Res() response, @Param('addressId') addressId) {
     const address = await this.addressService.getAddress(addressId);
-
     if (!address) {
       throw new NotFoundException('Address does not exists!');
     }
@@ -52,13 +57,9 @@ export class AddressController {
   }
 
   @Put('update')
-  async updateAddress(
-    @Res() response,
-    @Query('addressId') addressId,
-    @Body() createAddressDTO,
-  ) {
+  async updateAddress(@Res() response, @Body() createAddressDTO) {
     const address = await this.addressService.updateAddress(
-      addressId,
+      createAddressDTO.address,
       createAddressDTO,
     );
     if (!address) {
@@ -71,10 +72,9 @@ export class AddressController {
     });
   }
 
-  @Delete('delete')
-  async deleteAddress(@Res() response, @Query('addressId') addressId) {
+  @Delete('delete/:addressId')
+  async deleteAddress(@Res() response, @Param('addressId') addressId) {
     const address = await this.addressService.deleteAddress(addressId);
-
     if (!address) {
       throw new NotFoundException('Address does not exists!');
     }
