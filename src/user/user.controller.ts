@@ -69,12 +69,11 @@ export class UserController {
   }
 
   @Put('update')
-  async updateUser(
-    @Res() response,
-    @Query('userId') userId,
-    @Body() createUserDTO,
-  ) {
-    const user = await this.userService.updateUser(userId, createUserDTO);
+  async updateUser(@Req() request, @Res() response, @Body() createUserDTO) {
+    if (!request.user) throw new NotFoundException('You must be logged in.');
+
+    const user = await this.userService.updateUser(request.user, createUserDTO);
+
     if (!user) {
       throw new NotFoundException('User does not exists!');
     }

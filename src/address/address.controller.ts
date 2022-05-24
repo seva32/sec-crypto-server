@@ -8,8 +8,8 @@ import {
   Param,
   NotFoundException,
   Put,
-  Query,
   Delete,
+  HttpException,
   Req,
 } from '@nestjs/common';
 import { AddressService } from './address.service';
@@ -36,7 +36,7 @@ export class AddressController {
         user,
       });
     } catch (e) {
-      throw new NotFoundException('User does not exists!');
+      throw new NotFoundException('User does not exist');
     }
   }
 
@@ -73,15 +73,30 @@ export class AddressController {
   }
 
   @Delete('delete/:addressId')
-  async deleteAddress(@Res() response, @Param('addressId') addressId) {
-    const address = await this.addressService.deleteAddress(addressId);
-    if (!address) {
-      throw new NotFoundException('Address does not exists!');
-    }
+  async deleteAddress(
+    @Req() request,
+    @Res() response,
+    @Param('addressId') addressId,
+  ) {
+    try {
+      const address = await this.addressService.deleteAddress(
+        request.user,
+        addressId,
+      );
+      if (!address) {
+        throw new NotFoundException('Address does not exists!');
+      }
 
-    return response.status(HttpStatus.OK).json({
-      message: 'Address has been successfully deleted',
-      address,
-    });
+      return response.status(HttpStatus.OK).json({
+        message: 'Address has been successfully deleted',
+        address,
+      });
+    } catch (e) {
+      console.error(e);
+      throw new HttpException(
+        "We couldn't process your request",
+        HttpStatus.BAD_REQUEST,
+      );
+    }
   }
 }

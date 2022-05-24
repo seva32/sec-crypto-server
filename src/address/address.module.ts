@@ -1,4 +1,4 @@
-import { MiddlewareConsumer, Module } from '@nestjs/common';
+import { MiddlewareConsumer, Module, forwardRef } from '@nestjs/common';
 import { AddressModel } from './schemas/address.schema';
 import { AddressService } from './address.service';
 import { AddressController } from './address.controller';
@@ -11,7 +11,7 @@ import { JWT_SECRET } from 'src/utils/constants';
 @Module({
   imports: [
     MongooseModule.forFeature([{ name: 'Address', schema: AddressModel }]),
-    UserModule,
+    forwardRef(() => UserModule),
     JwtModule.register({
       secret: JWT_SECRET,
       signOptions: { expiresIn: '1h' },
@@ -19,6 +19,7 @@ import { JWT_SECRET } from 'src/utils/constants';
   ],
   providers: [AddressService],
   controllers: [AddressController],
+  exports: [AddressService],
 })
 export class AddressModule {
   configure(consumer: MiddlewareConsumer) {
