@@ -9,5 +9,8 @@ export const AddressModel = new mongoose.Schema({
     dropDups: true,
     immutable: true,
   },
+  fave: Boolean,
+  eur: String,
+  usd: String,
   created_at: { type: Date, default: Date.now, immutable: true },
 });

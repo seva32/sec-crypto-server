@@ -36,7 +36,16 @@ export class AddressController {
         user,
       });
     } catch (e) {
-      throw new NotFoundException('User does not exist');
+      let message = '';
+      if (typeof e === 'string') {
+        message = e.toUpperCase();
+      } else if (e instanceof Error) {
+        message = e.message;
+      }
+      throw new HttpException(
+        message || "We couldn't process your request",
+        e.status || HttpStatus.BAD_REQUEST,
+      );
     }
   }
 

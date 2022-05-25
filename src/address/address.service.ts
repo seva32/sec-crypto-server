@@ -28,6 +28,13 @@ export class AddressService implements OnModuleInit {
     createAddressDTO: CreateAddressDTO,
   ): Promise<Address> {
     try {
+      if (
+        await this.addressModel
+          .findOne({ address: createAddressDTO.address })
+          .exec()
+      ) {
+        throw new HttpException('Address already exist', HttpStatus.CONFLICT);
+      }
       const user = await this.userService.getUser(userId);
       if (user) {
         const address = new this.addressModel(createAddressDTO);
@@ -39,16 +46,16 @@ export class AddressService implements OnModuleInit {
           );
         });
       } else {
-        throw new HttpException('Invalid user', HttpStatus.NOT_FOUND);
+        throw new HttpException('Invalid user', HttpStatus.FORBIDDEN);
       }
     } catch (e) {
-      console.error(e);
       throw new HttpException(
-        'We could not complete the transaction',
-        HttpStatus.FORBIDDEN,
+        e.message || 'We could not complete the transaction',
+        e.status || HttpStatus.FORBIDDEN,
       );
     }
   }
+
   async getAllAddresses(): Promise<Address[]> {
     return this.addressModel.find().exec();
   }
